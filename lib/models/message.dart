@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum MessageType { Text, Image }
+enum MessageType { Text, Image, Document }
 
 class Message {
   String? senderID;
   String? senderName;
   String? content;
+  String? fileName;
   MessageType? messageType;
   Timestamp? sentAt;
 
@@ -13,6 +14,7 @@ class Message {
     required this.senderID,
     required this.senderName,
     required this.content,
+    this.fileName,
     required this.messageType,
     required this.sentAt,
   });
@@ -21,9 +23,9 @@ class Message {
     senderID = json['senderID'];
     senderName = json['senderName'];
     content = json['content'];
+    fileName = json['fileName'];
     sentAt = json['sentAt'];
     messageType = MessageType.values.byName(json['messageType']);
-
   }
 
   Map<String, dynamic> toJson() {
@@ -31,10 +33,11 @@ class Message {
     data['senderID'] = senderID;
     data['senderName'] = senderName;
     data['content'] = content;
+    if (fileName != null)
+      data['fileName'] = fileName;
     data['sentAt'] = sentAt;
     data['messageType'] = messageType!.name;
 
     return data;
   }
 }
-

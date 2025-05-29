@@ -12,6 +12,7 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'pdf_view_page.dart';
 
 class ChatPage extends StatefulWidget {
   final String chatId;
@@ -92,10 +93,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   Future<void> _loadOtherUserData() async {
     try {
-      Map<String, dynamic>? userData =
-          await _cloudService.fetchLoggedInUserData(
-        userId: widget.otherUserId,
-      );
+      Map<String, dynamic>? userData = await _cloudService
+          .fetchLoggedInUserData(userId: widget.otherUserId);
 
       if (userData != null) {
         setState(() {
@@ -125,6 +124,20 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 ? currentUser!
                 : otherUser!,
             text: message.content!,
+            createdAt: message.sentAt!.toDate(),
+          );
+        } else if (message.messageType == MessageType.Document) {
+          return ChatMessage(
+            user: message.senderID == widget.currentUserId
+                ? currentUser!
+                : otherUser!,
+            medias: [
+              ChatMedia(
+                url: message.content!,
+                fileName: message.fileName ?? "Document",
+                type: MediaType.file,
+              ),
+            ],
             createdAt: message.sentAt!.toDate(),
           );
         } else {
@@ -160,10 +173,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF8F9FA),
-              Color(0xFFE9ECEF),
-            ],
+            colors: [Color(0xFFF8F9FA), Color(0xFFE9ECEF)],
           ),
         ),
         child: DashChat(
@@ -180,25 +190,27 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             textColor: Colors.black87,
             currentUserContainerColor: const Color(0xFF007AFF),
             currentUserTextColor: Colors.white,
-            messagePadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            messagePadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             messageTimeBuilder: _customTimeBuilder,
           ),
+
           inputOptions: InputOptions(
             inputDecoration: InputDecoration(
               hintText: "Type a message...",
-              hintStyle: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 16,
-              ),
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 16),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25),
                 borderSide: BorderSide.none,
               ),
               filled: true,
               fillColor: Colors.white,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 12,
+              ),
               suffixIcon: _isUploading
                   ? Container(
                       padding: const EdgeInsets.all(12),
@@ -207,8 +219,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Color(0xFF007AFF)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF007AFF),
+                          ),
                         ),
                       ),
                     )
@@ -261,10 +274,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF007AFF),
-                              Color(0xFF5856D6),
-                            ],
+                            colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                           ),
                         ),
                         child: Center(
@@ -282,10 +292,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF007AFF),
-                              Color(0xFF5856D6),
-                            ],
+                            colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                           ),
                         ),
                         child: Center(
@@ -305,10 +312,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF007AFF),
-                          Color(0xFF5856D6),
-                        ],
+                        colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                       ),
                     ),
                     child: Center(
@@ -383,7 +387,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   Widget _customAvatarBuilder(
-      ChatUser user, Function? onAvatarTap, Function? onAvatarLongPress) {
+    ChatUser user,
+    Function? onAvatarTap,
+    Function? onAvatarLongPress,
+  ) {
     bool isOtherUser = user.id == widget.otherUserId;
 
     return Container(
@@ -411,10 +418,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFF007AFF),
-                        Color(0xFF5856D6),
-                      ],
+                      colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                     ),
                   ),
                   child: Center(
@@ -432,10 +436,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFF007AFF),
-                        Color(0xFF5856D6),
-                      ],
+                      colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                     ),
                   ),
                   child: Center(
@@ -455,10 +456,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF007AFF),
-                    Color(0xFF5856D6),
-                  ],
+                  colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                 ),
               ),
               child: Center(
@@ -475,8 +473,11 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  BoxDecoration _messageDecorationBuilder(ChatMessage message,
-      ChatMessage? previousMessage, ChatMessage? nextMessage) {
+  BoxDecoration _messageDecorationBuilder(
+    ChatMessage message,
+    ChatMessage? previousMessage,
+    ChatMessage? nextMessage,
+  ) {
     bool isCurrentUser = message.user.id == currentUser!.id;
 
     return BoxDecoration(
@@ -497,19 +498,117 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _customMediaBuilder(ChatMessage message, ChatMessage? previousMessage,
-      ChatMessage? nextMessage) {
+  Widget _customMediaBuilder(
+    ChatMessage message,
+    ChatMessage? previousMessage,
+    ChatMessage? nextMessage,
+  ) {
     if (message.medias?.isNotEmpty ?? false) {
+      final media = message.medias!.first;
+
+      // Check if it's a PDF file
+      if (media.type == MediaType.file &&
+          media.fileName.toLowerCase().endsWith('.pdf')) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          child: GestureDetector(
+            onTap: () => _openPDF(media.url, media.fileName),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.grey[900]!, Colors.grey[850]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey[700]!, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[600]!.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.orange[600]!.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.picture_as_pdf_rounded,
+                      color: Colors.orange[500],
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          media.fileName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            letterSpacing: 0.3,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'PDF',
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[800]!.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.open_in_new_rounded,
+                      color: Colors.grey[300],
+                      size: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      // Handle regular images
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: GestureDetector(
-            onTap: () => _showImageDialog(message.medias!.first.url),
+            onTap: () => _showImageDialog(media.url),
             child: Hero(
-              tag: message.medias!.first.url,
+              tag: media.url,
               child: CachedNetworkImage(
-                imageUrl: message.medias!.first.url,
+                imageUrl: media.url,
                 width: 200,
                 height: 200,
                 fit: BoxFit.cover,
@@ -522,8 +621,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   ),
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Color(0xFF007AFF)),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF007AFF),
+                      ),
                     ),
                   ),
                 ),
@@ -534,11 +634,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(
-                    Icons.error,
-                    size: 40,
-                    color: Colors.red,
-                  ),
+                  child: const Icon(Icons.error, size: 40, color: Colors.red),
                 ),
               ),
             ),
@@ -549,15 +645,202 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     return const SizedBox.shrink();
   }
 
+  void _openPDF(String pdfUrl, String fileName) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PDFViewerPage(pdfUrl: pdfUrl, fileName: fileName),
+      ),
+    );
+  }
+
+  Future<void> _sendMessage(ChatMessage chatMessage) async {
+    Message? message;
+
+    if (chatMessage.medias?.isNotEmpty ?? false) {
+      final media = chatMessage.medias!.first;
+      if (media.type == MediaType.image) {
+        message = Message(
+          senderID: currentUser!.id,
+          senderName: widget.loggedInUserName,
+          content: media.url,
+          messageType: MessageType.Image,
+          sentAt: Timestamp.fromDate(chatMessage.createdAt),
+        );
+      } else if (media.type == MediaType.file) {
+        message = Message(
+          senderID: currentUser!.id,
+          senderName: widget.loggedInUserName,
+          content: media.url,
+          fileName: media.fileName,
+          messageType: MessageType.Document,
+          sentAt: Timestamp.fromDate(chatMessage.createdAt),
+        );
+      }
+    } else {
+      message = Message(
+        senderID: currentUser!.id,
+        senderName: widget.loggedInUserName,
+        content: chatMessage.text,
+        messageType: MessageType.Text,
+        sentAt: Timestamp.fromDate(chatMessage.createdAt),
+      );
+    }
+
+    if (message != null) {
+      await _chatService.addMessage(chatId: widget.chatId, message: message);
+
+      // Check if the other user is active
+      bool isOtherUserActive = await _activeUserService.getActiveUsersStatus(
+        userID: widget.otherUserId,
+      );
+
+      // Store notification only if the user is inactive
+      if (!isOtherUserActive) {
+        await _notificationService.storeNotificationForMessage(
+          chatId: widget.chatId,
+          loggedInUserId: widget.currentUserId,
+          loggedInUserName: widget.loggedInUserName,
+          receiverId: widget.otherUserId,
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Failed to create message. Please try again."),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    }
+  }
+
+  // Update your _mediaMessageButton to show options for image and PDF:
+  Widget _mediaMessageButton() {
+    return Container(
+      margin: const EdgeInsets.only(left: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF007AFF),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF007AFF).withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: PopupMenuButton<String>(
+        onSelected: (value) {
+          if (value == 'image') {
+            _selectAndUploadImage();
+          } else if (value == 'pdf') {
+            _selectAndUploadPDF();
+          }
+        },
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: 'image',
+            child: Row(
+              children: [
+                Icon(Icons.photo_camera, size: 20),
+                SizedBox(width: 12),
+                Text('Image'),
+              ],
+            ),
+          ),
+          const PopupMenuItem(
+            value: 'pdf',
+            child: Row(
+              children: [
+                Icon(Icons.picture_as_pdf, size: 20),
+                SizedBox(width: 12),
+                Text('PDF Document'),
+              ],
+            ),
+          ),
+        ],
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: const BoxDecoration(
+            color: Color(0xFF007AFF),
+            shape: BoxShape.circle,
+          ),
+          child: _isUploading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Icon(Icons.attach_file, color: Colors.white, size: 22),
+        ),
+      ),
+    );
+  }
+
+  // Add this method to handle PDF selection and upload:
+  Future<void> _selectAndUploadPDF() async {
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      File? file = await _mediaService.getPdfFromStorage();
+      if (file != null) {
+        String? downloadPdfUrl = await _mediaService
+            .uploadPdfToStorageFromChatUpload(
+              file: file,
+              chatId: widget.chatId,
+            );
+
+        if (downloadPdfUrl != null) {
+          String fileName = _mediaService.getFileName(file.path);
+
+          ChatMessage chatMessage = ChatMessage(
+            user: currentUser!,
+            createdAt: DateTime.now(),
+            medias: [
+              ChatMedia(
+                url: downloadPdfUrl,
+                fileName: fileName,
+                type: MediaType.file,
+              ),
+            ],
+          );
+          await _sendMessage(chatMessage);
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to upload PDF: ${e.toString()}"),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
+    }
+  }
+
   Widget _customTimeBuilder(ChatMessage message, bool isNextMessageSameAuthor) {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Text(
         "${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}",
-        style: TextStyle(
-          fontSize: 11,
-          color: Colors.grey[600],
-        ),
+        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
       ),
     );
   }
@@ -583,16 +866,13 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                       fit: BoxFit.contain,
                       placeholder: (context, url) => const Center(
                         child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       ),
                       errorWidget: (context, url, error) => const Center(
-                        child: Icon(
-                          Icons.error,
-                          size: 60,
-                          color: Colors.white,
-                        ),
+                        child: Icon(Icons.error, size: 60, color: Colors.white),
                       ),
                     ),
                   ),
@@ -619,96 +899,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _sendMessage(ChatMessage chatMessage) async {
-    Message? message;
-
-    if (chatMessage.medias?.isNotEmpty ?? false) {
-      if (chatMessage.medias!.first.type == MediaType.image) {
-        message = Message(
-          senderID: currentUser!.id,
-          senderName: widget.loggedInUserName,
-          content: chatMessage.medias!.first.url,
-          messageType: MessageType.Image,
-          sentAt: Timestamp.fromDate(chatMessage.createdAt),
-        );
-      }
-    } else {
-      message = Message(
-        senderID: currentUser!.id,
-        senderName: widget.loggedInUserName,
-        content: chatMessage.text,
-        messageType: MessageType.Text,
-        sentAt: Timestamp.fromDate(chatMessage.createdAt),
-      );
-    }
-
-    if (message != null) {
-      await _chatService.addMessage(
-        chatId: widget.chatId,
-        message: message,
-      );
-
-      // Check if the other user is active
-      bool isOtherUserActive = await _activeUserService.getActiveUsersStatus(
-        userID: widget.otherUserId,
-      );
-
-      // Store notification only if the user is inactive
-      if (!isOtherUserActive) {
-        await _notificationService.storeNotificationForMessage(
-          chatId: widget.chatId,
-          loggedInUserId: widget.currentUserId,
-          loggedInUserName: widget.loggedInUserName,
-          receiverId: widget.otherUserId,
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Failed to create message. Please try again."),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
-    }
-  }
-
-  Widget _mediaMessageButton() {
-    return Container(
-      margin: const EdgeInsets.only(left: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF007AFF),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF007AFF).withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IconButton(
-        onPressed: _isUploading ? null : _selectAndUploadImage,
-        icon: _isUploading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : const Icon(
-                Icons.photo_camera,
-                color: Colors.white,
-                size: 22,
-              ),
-      ),
-    );
-  }
-
   Future<void> _selectAndUploadImage() async {
     setState(() {
       _isUploading = true;
@@ -717,11 +907,11 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     try {
       File? file = await _mediaService.getImageFromGallery();
       if (file != null) {
-        String? downloadImgUrl =
-            await _mediaService.uploadImageToStorageFromChatUpload(
-          file: file,
-          chatId: widget.chatId,
-        );
+        String? downloadImgUrl = await _mediaService
+            .uploadImageToStorageFromChatUpload(
+              file: file,
+              chatId: widget.chatId,
+            );
 
         if (downloadImgUrl != null) {
           ChatMessage chatMessage = ChatMessage(
@@ -744,8 +934,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           content: Text("Failed to upload image: ${e.toString()}"),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     } finally {

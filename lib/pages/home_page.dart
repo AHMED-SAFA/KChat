@@ -281,8 +281,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       shape: BoxShape.circle,
                     ),
                     constraints: const BoxConstraints(
-                      minWidth: 20,
-                      minHeight: 20,
+                      minWidth: 18,
+                      minHeight: 18,
                     ),
                     child: Text(
                       _unreadNotificationCount > 99
