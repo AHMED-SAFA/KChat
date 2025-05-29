@@ -105,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage>
         'Password Required',
         'Enter your current password to save changes',
         Icons.lock_outline,
-        Colors.orange,
+        Colors.grey,
       );
       return;
     }
@@ -139,15 +139,6 @@ class _ProfilePageState extends State<ProfilePage>
       );
       await currentUser.reauthenticateWithCredential(credential);
 
-      // Update profile image if changed
-      // if (_newProfileImage != null) {
-      //   String newProfileImageUrl = await _mediaService.uploadImageToStorage(
-      //     _newProfileImage!,
-      //     currentUser.uid,
-      //   );
-      //   _profileImageUrl = newProfileImageUrl;
-      // }
-
       String? newImageUrl;
       if (_newProfileImage != null) {
         newImageUrl = await _mediaService.uploadImageToStorage(
@@ -155,31 +146,10 @@ class _ProfilePageState extends State<ProfilePage>
           currentUser.uid,
         );
 
-        // Immediately update the local state
         setState(() {
           _profileImageUrl = newImageUrl;
         });
       }
-
-      // Update profile image if changed
-      // if (_newProfileImage != null) {
-      //   try {
-      //     String newProfileImageUrl = await _mediaService.uploadImageToStorage(
-      //       _newProfileImage!,
-      //       currentUser.uid,
-      //     );
-      //     _profileImageUrl = newProfileImageUrl;
-      //   } catch (e) {
-      //     Navigator.of(context).pop();
-      //     _showToast(
-      //       'Upload Error',
-      //       'Failed to upload profile image: ${e.toString()}',
-      //       Icons.error,
-      //       Colors.red,
-      //     );
-      //     return;
-      //   }
-      // }
 
       // Update data in Firestore
       await _cloudService.storeUserData(
@@ -215,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage>
         'Success!',
         'Your profile has been updated successfully',
         Icons.check_circle,
-        Colors.green,
+        Colors.white,
       );
     } catch (e) {
       Navigator.of(context).pop(); // Close loading dialog
@@ -223,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage>
         'Error',
         'Failed to update profile. Please try again.',
         Icons.error,
-        Colors.red,
+        Colors.white,
       );
     }
   }
@@ -324,7 +294,7 @@ class _ProfilePageState extends State<ProfilePage>
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: Colors.grey[800],
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -345,7 +315,7 @@ class _ProfilePageState extends State<ProfilePage>
         Container(
           margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
-            color: Colors.white24,
+            color: Colors.grey[800],
             borderRadius: BorderRadius.circular(12),
           ),
           child: IconButton(
@@ -385,7 +355,7 @@ class _ProfilePageState extends State<ProfilePage>
             ),
             child: CircleAvatar(
               radius: 60,
-              backgroundColor: Colors.white24,
+              backgroundColor: Colors.grey[800],
               backgroundImage: _newProfileImage != null
                   ? FileImage(_newProfileImage!)
                   : (_profileImageUrl != null
@@ -409,7 +379,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 child: const Icon(
                   Icons.camera_alt,
-                  color: Colors.deepPurple,
+                  color: Colors.black,
                   size: 20,
                 ),
               ),
@@ -489,9 +459,7 @@ class _ProfilePageState extends State<ProfilePage>
       decoration: BoxDecoration(
         color: enabled ? Colors.grey.shade50 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: enabled ? Colors.deepPurple.shade100 : Colors.grey.shade300,
-        ),
+        border: Border.all(color: enabled ? Colors.grey : Colors.grey.shade300),
       ),
       child: TextField(
         controller: controller,
@@ -503,12 +471,12 @@ class _ProfilePageState extends State<ProfilePage>
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-            color: enabled ? Colors.deepPurple : Colors.grey.shade500,
+            color: enabled ? Colors.black : Colors.grey.shade500,
             fontWeight: FontWeight.w500,
           ),
           prefixIcon: Icon(
             icon,
-            color: enabled ? Colors.deepPurple : Colors.grey.shade400,
+            color: enabled ? Colors.black : Colors.grey.shade400,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(20),
@@ -522,7 +490,7 @@ class _ProfilePageState extends State<ProfilePage>
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.deepPurple.shade100),
+        border: Border.all(color: Colors.grey),
       ),
       child: TextField(
         controller: _passwordController,
@@ -531,14 +499,14 @@ class _ProfilePageState extends State<ProfilePage>
         decoration: InputDecoration(
           labelText: 'Current Password (Required)',
           labelStyle: const TextStyle(
-            color: Colors.deepPurple,
+            color: Colors.black,
             fontWeight: FontWeight.w500,
           ),
-          prefixIcon: const Icon(Icons.lock_outline, color: Colors.deepPurple),
+          prefixIcon: const Icon(Icons.lock_outline, color: Colors.black),
           suffixIcon: IconButton(
             icon: Icon(
               _showPassword ? Icons.visibility_off : Icons.visibility,
-              color: Colors.deepPurple,
+              color: Colors.black,
             ),
             onPressed: () {
               setState(() {
@@ -565,12 +533,12 @@ class _ProfilePageState extends State<ProfilePage>
             _cancelEdit,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 10),
         Expanded(
           child: _buildElegantButton(
-            'Save Changes',
+            'Save',
             Icons.check,
-            Colors.deepPurple,
+            Colors.black,
             Colors.white,
             _updateUserData,
           ),
@@ -701,18 +669,18 @@ class _ProfilePageState extends State<ProfilePage>
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.deepPurple.shade50,
+          color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 32, color: Colors.deepPurple),
+            Icon(icon, size: 32, color: Colors.black),
             const SizedBox(height: 8),
             Text(
               title,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.deepPurple,
+                color: Colors.black,
               ),
             ),
           ],

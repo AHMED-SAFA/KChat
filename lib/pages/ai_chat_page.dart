@@ -57,13 +57,6 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // Add validation (recommended)
-    // if (geminiApiKey!.isEmpty) {
-    //   throw Exception("GEMINI_API_KEY not found in .env!");
-    // }
-    // if (groqApiKey!.isEmpty) {
-    //   throw Exception("groq api key not found in .env!");
-    // }
     super.initState();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),

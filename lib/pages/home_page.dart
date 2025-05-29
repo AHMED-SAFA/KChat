@@ -50,7 +50,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // Initialize animation controllers
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -96,6 +95,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  Future<void> _refreshUsers() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _fetchUsers();
+  }
+
   // Add this method
   void _listenToNotificationCount() {
     _notificationCountSubscription = _getIt
@@ -138,10 +144,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _refreshUsers() async {
-    await _fetchUsers();
-  }
-
   Future<void> _fetchLoggedInUserData() async {
     _loggedInUserData = await _cloudService.fetchLoggedInUserData(
       userId: _loggedInUserId,
@@ -152,38 +154,45 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: _isLoading
-                ? const SizedBox(
-                    height: 400,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.black,
+    return RefreshIndicator(
+      onRefresh: _refreshUsers,
+      color: Colors.black,
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(),
+            SliverToBoxAdapter(
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 400,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading your connections...',
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                        ],
+                            SizedBox(height: 16),
+                            Text(
+                              'Loading your connections...',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                : _homeUI(),
-          ),
-        ],
+                    )
+                  : _homeUI(),
+            ),
+          ],
+        ),
+        drawer: _buildDrawer(),
+        floatingActionButton: _buildFloatingActionButton(),
       ),
-      drawer: _buildDrawer(),
-      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
@@ -307,7 +316,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildActiveSection(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 22),
               _buildAllUsersSection(),
             ],
           ),
@@ -318,7 +327,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   Widget _buildActiveSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.green.shade50,
         borderRadius: BorderRadius.circular(20),
@@ -451,11 +460,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget _buildActiveUsersRow() {
     if (_activeUsersList.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
+        padding: const EdgeInsets.all(10),
         child: const Row(
           children: [
             Icon(Icons.access_time, color: Colors.grey, size: 20),
