@@ -9,6 +9,7 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import '../modals/create_group_modal.dart';
 import '../services/chat_service.dart';
 import '../services/cloud_service.dart';
 import '../services/notification_service.dart';
@@ -555,18 +556,25 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
       onPressed: () async {
-        // final groupId = await Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) =>
-        //         CreateGroupChatPage(currentUserId: _loggedInUserId),
-        //   ),
-        // );
+        _showCreateGroupModal();
       },
       icon: const Icon(Icons.group_add),
       label: const Text('New Group'),
       backgroundColor: Colors.black,
       foregroundColor: Colors.white,
+    );
+  }
+
+  void _showCreateGroupModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CreateGroupModal(
+        users: _users,
+        loggedInUserId: _loggedInUserId,
+        loggedInUserName: _loggedInUserData!['name'],
+      ),
     );
   }
 

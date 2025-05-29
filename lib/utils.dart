@@ -3,6 +3,7 @@ import 'package:kchat/services/auth_service.dart';
 import 'package:kchat/services/bot_service.dart';
 import 'package:kchat/services/chat_service.dart';
 import 'package:kchat/services/cloud_service.dart';
+import 'package:kchat/services/group_chat_service.dart';
 import 'package:kchat/services/media_service.dart';
 import 'package:kchat/services/activeUser_service.dart';
 import 'package:kchat/services/navigation_service.dart';
@@ -41,4 +42,6 @@ Future<void> registerServices() async {
   getIt.registerSingleton<ActiveUserService>(ActiveUserService());
 
   getIt.registerSingleton<BotService>(BotService());
+
+  getIt.registerSingleton<GroupChatService>(GroupChatService());
 }

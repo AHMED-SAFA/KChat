@@ -60,18 +60,4 @@ class ChatService {
         .orderBy('sentAt', descending: true)
         .snapshots();
   }
-
-  //to cloud firestore
-  Future<String> createGroupChat({required List<String> userIds}) async {
-    final groupId = FirebaseFirestore.instance.collection('chats').doc().id;
-
-    await FirebaseFirestore.instance.collection('chats').doc(groupId).set({
-      'isGroup': true,
-      'participants': userIds,
-      'createdAt': FieldValue.serverTimestamp(),
-      'messages': [],
-    });
-
-    return groupId;
-  }
 }
