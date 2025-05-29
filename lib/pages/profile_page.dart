@@ -458,7 +458,7 @@ class _ProfilePageState extends State<ProfilePage>
               'Email Address',
               _emailController,
               Icons.email_outlined,
-              enabled: _isEditing,
+              enabled: false,
             ),
             const SizedBox(height: 20),
             _buildElegantTextField(

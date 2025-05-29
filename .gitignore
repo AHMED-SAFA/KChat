@@ -7,7 +7,6 @@
 .atom/
 .build/
 .buildlog/
-lib/consts/const.dart
 .env
 android/app/google-services.json
 firebase.json
