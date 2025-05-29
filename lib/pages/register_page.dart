@@ -353,7 +353,7 @@ class _RegisterPageState extends State<RegisterPage> {
       style: const TextStyle(fontSize: 16),
       decoration: InputDecoration(
         labelText: 'Password',
-        hintText: 'Enter your password',
+        hintText: 'Set password',
         prefixIcon: Container(
           margin: const EdgeInsets.all(12),
           child: const Icon(

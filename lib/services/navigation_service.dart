@@ -1,4 +1,5 @@
 import 'package:kchat/pages/ai_chat_page.dart';
+import 'package:kchat/pages/group_chat_page.dart';
 import 'package:kchat/pages/home_page.dart';
 import 'package:kchat/pages/login_page.dart';
 import 'package:kchat/pages/profile_page.dart';
@@ -15,6 +16,7 @@ class NavigationService {
     "/profile": (context) => const ProfilePage(),
     "/notification": (context) => const NotificationPage(),
     "/aichatpage": (context) => const AIChatPage(),
+    "/groupchat": (context) => const GroupChatPage(),
   };
 
   GlobalKey<NavigatorState>? get navigatorKey {

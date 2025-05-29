@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:kchat/pages/create_group_chat_page.dart';
+import 'package:kchat/pages/group_chat_page.dart';
 import 'package:kchat/services/activeUser_service.dart';
 import 'package:kchat/services/auth_service.dart';
 import 'package:kchat/services/navigation_service.dart';
@@ -555,13 +555,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
       onPressed: () async {
-        final groupId = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                CreateGroupChatPage(currentUserId: _loggedInUserId),
-          ),
-        );
+        // final groupId = await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) =>
+        //         CreateGroupChatPage(currentUserId: _loggedInUserId),
+        //   ),
+        // );
       },
       icon: const Icon(Icons.group_add),
       label: const Text('New Group'),
@@ -619,13 +619,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               _navigationService.pushNamed('/profile');
             }),
             _buildDrawerItem(Icons.group, 'Groups', () async {
-              final groupId = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      CreateGroupChatPage(currentUserId: _loggedInUserId),
-                ),
-              );
+              _navigationService.pushNamed('/groupchat');
             }),
 
             _buildDrawerItem(Icons.assistant, 'Ai Chat', () {
@@ -633,6 +627,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             }),
 
             const Divider(color: Colors.white24, height: 32),
+
             _buildDrawerItem(Icons.logout, 'Logout', () async {
               _showLogoutDialog();
             }),

@@ -195,8 +195,18 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               vertical: 12,
             ),
             messageTimeBuilder: _customTimeBuilder,
+            messageTextBuilder: (message, previousMessage, nextMessage) {
+              return SelectableText(
+                message.text ?? '',
+                style: TextStyle(
+                  color: message.user.id == currentUser?.id
+                      ? Colors.white
+                      : Colors.black87,
+                  fontSize: 14,
+                ),
+              );
+            },
           ),
-
           inputOptions: InputOptions(
             inputDecoration: InputDecoration(
               hintText: "Type a message...",
