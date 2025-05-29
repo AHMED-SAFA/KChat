@@ -4,6 +4,7 @@ import 'dart:io';
 import '../models/message.dart';
 
 class GroupChatService {
+
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final SupabaseClient _supabase = Supabase.instance.client;
 
@@ -38,7 +39,6 @@ class GroupChatService {
         'memberIds': allMemberIds,
         'memberNames': allMemberNames,
         'createdAt': FieldValue.serverTimestamp(),
-        'lastMessage': '',
         'lastMessageTime': FieldValue.serverTimestamp(),
       });
 
