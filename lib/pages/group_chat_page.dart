@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../services/group_chat_service.dart';
 import '../services/auth_service.dart';
 import '../services/navigation_service.dart';
+import 'chat_page_group.dart';
 
 class GroupChatPage extends StatefulWidget {
   const GroupChatPage({super.key});
@@ -170,20 +171,6 @@ class _GroupChatPageState extends State<GroupChatPage> {
                           fontSize: 12,
                         ),
                       ),
-                      if (groupData['lastMessage'] != null &&
-                          groupData['lastMessage'].isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            groupData['lastMessage'],
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 13,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
                     ],
                   ),
                   trailing: Container(
@@ -209,14 +196,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
   }
 
   void _navigateToGroupChat(Map<String, dynamic> groupData) {
-    // _navigationService.push(
-    //   MaterialPageRoute(
-    //     builder: (context) => GroupChatDetailPage(
-    //       groupId: groupData['groupId'],
-    //       groupName: groupData['groupName'],
-    //       currentUserId: _loggedInUserId,
-    //     ),
-    //   ),
-    // );
+    _navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => ChatGroupPage(groupData: groupData),
+      ),
+    );
   }
 }
