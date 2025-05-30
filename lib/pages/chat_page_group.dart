@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import '../services/cloud_service.dart';
 import '../services/group_chat_service.dart';
 import '../services/auth_service.dart';
-import '../services/navigation_service.dart';
 
 class ChatGroupPage extends StatefulWidget {
   final Map<String, dynamic> groupData;
@@ -22,8 +21,9 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
   late GroupChatService _groupChatService;
   late CloudService _cloudService;
   late AuthService _authService;
-  late NavigationService _navigationService;
   Map<String, dynamic>? _loggedInUserData;
+  List<String> memberIds = [];
+  List<Map<String, dynamic>> _membersData = [];
   late String _loggedInUserId;
   String? _loggedInUserName;
   ChatUser? _currentUser;
@@ -41,10 +41,11 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
       _groupChatService = _getIt.get<GroupChatService>();
       _cloudService = _getIt.get<CloudService>();
       _authService = _getIt.get<AuthService>();
-      _navigationService = _getIt.get<NavigationService>();
 
       // Get user ID
       _loggedInUserId = _authService.user!.uid;
+      await fetchAndStoreMemberIds(widget.groupData['groupId']);
+      await _loadMembersData();
 
       // Fetch user data
       _loggedInUserData = await _cloudService.fetchLoggedInUserData(
@@ -72,6 +73,55 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _loadMembersData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final membersData = await _groupChatService.getCompleteUserDataForMembers(
+        memberIds,
+      );
+      setState(() {
+        _membersData = membersData;
+        print("member datas are:");
+        print(_membersData);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load members: $e')));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchAndStoreMemberIds(String groupId) async {
+    try {
+      memberIds.clear();
+
+      DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(groupId)
+          .get();
+
+      if (groupDoc.exists) {
+        memberIds = List<String>.from(groupDoc['memberIds']);
+        print('Fetched member IDs: $memberIds');
+      }
+    } catch (e) {
+      print('Error fetching member IDs: $e');
+    }
+  }
+
+  // Helper method to check if URL is valid
+  bool _isValidImageUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+    return url.startsWith('http://') || url.startsWith('https://');
   }
 
   @override
@@ -267,6 +317,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                       ),
                     ),
                   ),
+
                   // Group avatar and name
                   Center(
                     child: Column(
@@ -275,13 +326,15 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                           radius: 40,
                           backgroundColor: Colors.deepPurple.shade100,
                           backgroundImage:
-                              widget.groupData['groupImageUrl'] != null &&
-                                  widget.groupData['groupImageUrl'].isNotEmpty
+                              _isValidImageUrl(
+                                widget.groupData['groupImageUrl'],
+                              )
                               ? NetworkImage(widget.groupData['groupImageUrl'])
                               : null,
                           child:
-                              widget.groupData['groupImageUrl'] == null ||
-                                  widget.groupData['groupImageUrl'].isEmpty
+                              !_isValidImageUrl(
+                                widget.groupData['groupImageUrl'],
+                              )
                               ? Icon(
                                   Icons.group,
                                   color: Colors.deepPurple.shade700,
@@ -300,106 +353,91 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 24),
-                  // Group info section
+
+                  // Group Info
                   const Text(
                     'Group Info',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  Text('Created by: ${widget.groupData['creatorName']}'),
                   Text(
-                    'Created on: ${DateFormat('MMM d, yyyy').format(widget.groupData['createdAt'].toDate())}',
+                    'Created by: ${widget.groupData['creatorName'] ?? 'Unknown'}',
                   ),
+                  Text(
+                    'Created on: ${widget.groupData['createdAt'] != null ? DateFormat('MMM d, yyyy').format(widget.groupData['createdAt'].toDate()) : 'Unknown'}',
+                  ),
+
                   const SizedBox(height: 24),
-                  // Members section
+
+                  // Members List from _membersData
                   const Text(
                     'Members',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
-                    child: StreamBuilder<DocumentSnapshot>(
-                      stream: _groupChatService.getGroupStream(
-                        widget.groupData['groupId'],
-                      ),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
+                    child: _membersData.isEmpty
+                        ? const Center(child: Text('No members found'))
+                        : ListView.builder(
+                            controller: scrollController,
+                            itemCount: _membersData.length,
+                            itemBuilder: (context, index) {
+                              final member = _membersData[index];
+                              final isCreator =
+                                  member['id'] == widget.groupData['creatorId'];
 
-                        final data =
-                            snapshot.data!.data() as Map<String, dynamic>;
-                        final memberIds = List<String>.from(
-                          data['memberIds'] ?? [],
-                        );
+                              // Safe access to member data
+                              final memberName =
+                                  member['name'] ?? 'Unknown User';
+                              final memberPhotoUrl =
+                                  member['profileImageUrl'] ??
+                                  member['photoUrl'];
 
-                        return FutureBuilder<List<Map<String, dynamic>>>(
-                          future: _groupChatService.getGroupMembersInfo(
-                            memberIds,
-                          ),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-
-                            final members = snapshot.data!;
-
-                            return ListView.builder(
-                              controller: scrollController,
-                              itemCount: members.length,
-                              itemBuilder: (context, index) {
-                                final member = members[index];
-                                final isCreator =
-                                    member['id'] ==
-                                    widget.groupData['creatorId'];
-
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundImage: member['photoUrl'] != null
-                                        ? NetworkImage(member['photoUrl'])
-                                        : null,
-                                    child: member['photoUrl'] == null
-                                        ? Text(
-                                            member['name'][0].toUpperCase(),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                  title: Text(
-                                    member['name'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  subtitle: isCreator
-                                      ? const Text(
-                                          'Group Admin',
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.deepPurple.shade100,
+                                  backgroundImage:
+                                      _isValidImageUrl(memberPhotoUrl)
+                                      ? NetworkImage(memberPhotoUrl!)
+                                      : null,
+                                  child: !_isValidImageUrl(memberPhotoUrl)
+                                      ? Text(
+                                          memberName.isNotEmpty
+                                              ? memberName[0].toUpperCase()
+                                              : 'U',
                                           style: TextStyle(
-                                            color: Colors.deepPurple,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.deepPurple.shade700,
                                           ),
                                         )
                                       : null,
-                                  trailing: isCreator
-                                      ? Icon(
-                                          Icons.admin_panel_settings,
-                                          color: Colors.deepPurple.shade700,
-                                        )
-                                      : null,
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
+                                ),
+                                title: Text(
+                                  memberName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                subtitle: isCreator
+                                    ? const Text(
+                                        'Group Admin',
+                                        style: TextStyle(
+                                          color: Colors.deepPurple,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      )
+                                    : null,
+                                trailing: isCreator
+                                    ? Icon(
+                                        Icons.admin_panel_settings,
+                                        color: Colors.deepPurple.shade700,
+                                      )
+                                    : null,
+                              );
+                            },
+                          ),
                   ),
                 ],
               ),
