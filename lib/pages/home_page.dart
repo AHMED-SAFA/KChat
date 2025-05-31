@@ -693,7 +693,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   ),
                   _buildEnhancedDrawerItem(
                     Icons.smart_toy_rounded,
-                    'AI Assistant',
+                    'AI Assistants',
                     () => _navigationService.pushNamed('/aichatpage'),
                   ),
 

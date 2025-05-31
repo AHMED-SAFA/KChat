@@ -60,5 +60,6 @@ flutter_launcher_icons:
 flutter:
   assets:
     - .env
+    - assets/splash_icon.png
 
   uses-material-design: true

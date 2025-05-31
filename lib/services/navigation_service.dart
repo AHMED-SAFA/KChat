@@ -5,6 +5,7 @@ import 'package:kchat/pages/login_page.dart';
 import 'package:kchat/pages/profile_page.dart';
 import 'package:kchat/pages/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:kchat/splash/splash_screen.dart';
 import '../pages/notification_page.dart';
 
 class NavigationService {
@@ -12,6 +13,7 @@ class NavigationService {
   final Map<String, Widget Function(BuildContext)> _routes = {
     "/login": (context) => const Login(),
     "/home": (context) => const Home(),
+    "/splash": (context) => const SplashScreen(),
     "/register": (context) => const RegisterPage(),
     "/profile": (context) => const ProfilePage(),
     "/notification": (context) => const NotificationPage(),

@@ -35,10 +35,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: _navigationService.navigatorKey,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      initialRoute: _authService.user != null ? "/home" : "/login",
+      initialRoute: "/splash",
       routes: _navigationService.routes,
     );
   }
