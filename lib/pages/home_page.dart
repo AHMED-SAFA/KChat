@@ -721,12 +721,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     () => _showLogoutDialog(),
                     isDestructive: true,
                   ),
-                  _buildEnhancedDrawerItem(
-                    Icons.delete_forever_rounded,
-                    'Delete Account',
-                    () => _showDeleteAccountDialog(),
-                    isDestructive: true,
-                  ),
                 ],
               ),
             ),
@@ -814,79 +808,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white24,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: Colors.white, size: 20),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text('Delete Account'),
-          content: const Text(
-            'Are you sure you want to delete your account? This action cannot be undone.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                User? user = FirebaseAuth.instance.currentUser;
-                if (user != null) {
-                  await _cloudService.deleteUserAccount(user.uid);
-                  _navigationService.pushReplacementNamed("/login");
-                  DelightToastBar(
-                    builder: (context) => const ToastCard(
-                      leading: Icon(
-                        Icons.check_circle,
-                        size: 28,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        "Account deleted successfully",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ).show(context);
-                }
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
     );
   }
 

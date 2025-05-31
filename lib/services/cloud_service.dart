@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class CloudService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseDatabase _realtimeDb = FirebaseDatabase.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   //store to cloud firestore
   Future<void> storeUserData({
@@ -127,18 +125,6 @@ class CloudService {
       await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
-        //delete dp from storage
-        // Map<String, dynamic>? userData =
-        // userDoc.data() as Map<String, dynamic>?;
-        // if (userData != null && userData.containsKey('profileImageUrl')) {
-        //   String profileImageUrl = userData['profileImageUrl'];
-        //
-        //   // Delete the profile image from Firebase Storage
-        //   Reference storageRef = _firebaseStorage.refFromURL(profileImageUrl);
-        //   await storageRef.delete();
-        // }
-
-        // Delete user data from Firestore
         await _firestore.collection('users').doc(userId).delete();
       }
 
