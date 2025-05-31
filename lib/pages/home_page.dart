@@ -581,68 +581,237 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget _buildDrawer() {
     return Drawer(
       child: Container(
-        decoration: const BoxDecoration(color: Color(0xFF293f61)),
-        child: ListView(
-          padding: EdgeInsets.zero,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF2c3e50), // Dark slate
+              Color(0xFF34495e), // Medium slate
+              Color(0xFF455a64), // Light indigo
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: Column(
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.transparent),
+            // Enhanced Header
+            Container(
+              height: 260,
+              padding: const EdgeInsets.only(top: 40, bottom: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white24,
-                    backgroundImage:
-                        (_profileImageUrl != null
-                                ? NetworkImage(_profileImageUrl!)
-                                : null)
-                            as ImageProvider?,
-                    child: _profileImageUrl == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: Colors.white,
-                          )
-                        : null,
+                  // Profile Image with Shadow and Border
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.white.withOpacity(0.1),
+                      child: CircleAvatar(
+                        radius: 46,
+                        backgroundColor: Colors.white,
+                        backgroundImage: _profileImageUrl != null
+                            ? NetworkImage(_profileImageUrl!)
+                            : null,
+                        child: _profileImageUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Color(0xFF1a237e),
+                              )
+                            : null,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
+                  // User Name with Better Typography
                   Text(
                     _loggedInUserData != null
                         ? "${_loggedInUserData!['name']}"
-                        : 'User',
+                        : 'Welcome User',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Status or Email (optional)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'Online',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            _buildDrawerItem(Icons.home, 'Home', () {
-              Navigator.pop(context);
-            }),
-            _buildDrawerItem(Icons.person, 'Profile', () {
-              _navigationService.pushNamed('/profile');
-            }),
-            _buildDrawerItem(Icons.group, 'Groups', () async {
-              _navigationService.pushNamed('/groupchat');
-            }),
 
-            _buildDrawerItem(Icons.assistant, 'Ai Chat', () {
-              _navigationService.pushNamed('/aichatpage');
-            }),
+            // Menu Items
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                children: [
+                  _buildEnhancedDrawerItem(
+                    Icons.home_rounded,
+                    'Home',
+                    () => Navigator.pop(context),
+                    isFirst: true,
+                  ),
+                  _buildEnhancedDrawerItem(
+                    Icons.person_rounded,
+                    'Profile',
+                    () => _navigationService.pushNamed('/profile'),
+                  ),
+                  _buildEnhancedDrawerItem(
+                    Icons.group_rounded,
+                    'Groups',
+                    () => _navigationService.pushNamed('/groupchat'),
+                  ),
+                  _buildEnhancedDrawerItem(
+                    Icons.smart_toy_rounded,
+                    'AI Assistant',
+                    () => _navigationService.pushNamed('/aichatpage'),
+                  ),
 
-            const Divider(color: Colors.white24, height: 32),
+                  // Elegant Divider
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 16,
+                    ),
+                    height: 1,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withOpacity(0.3),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
 
-            _buildDrawerItem(Icons.logout, 'Logout', () async {
-              _showLogoutDialog();
-            }),
-            _buildDrawerItem(Icons.delete_forever, 'Delete Account', () async {
-              _showDeleteAccountDialog();
-            }),
+                  _buildEnhancedDrawerItem(
+                    Icons.logout_rounded,
+                    'Sign Out',
+                    () => _showLogoutDialog(),
+                    isDestructive: true,
+                  ),
+                  _buildEnhancedDrawerItem(
+                    Icons.delete_forever_rounded,
+                    'Delete Account',
+                    () => _showDeleteAccountDialog(),
+                    isDestructive: true,
+                  ),
+                ],
+              ),
+            ),
+
+            // Footer
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Version 1.0.0',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnhancedDrawerItem(
+    IconData icon,
+    String title,
+    VoidCallback onTap, {
+    bool isFirst = false,
+    bool isDestructive = false,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 4, top: isFirst ? 8 : 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withOpacity(0.05),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.1),
+                width: 0.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isDestructive
+                        ? Colors.red.withOpacity(0.15)
+                        : Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isDestructive ? Colors.red.shade300 : Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: isDestructive ? Colors.red.shade300 : Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: isDestructive
+                      ? Colors.red.shade300.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.4),
+                  size: 14,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

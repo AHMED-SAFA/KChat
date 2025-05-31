@@ -70,27 +70,6 @@ class GroupChatService {
     }
   }
 
-  Future<String?> uploadMessageImage(File imageFile, String groupId) async {
-    try {
-      final String fileName =
-          'msg_${groupId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-      final response = await _supabase.storage
-          .from('group-message-images')
-          .upload(fileName, imageFile);
-
-      if (response.isNotEmpty) {
-        final String publicUrl = _supabase.storage
-            .from('group-message-images')
-            .getPublicUrl(fileName);
-        return publicUrl;
-      }
-      return null;
-    } catch (e) {
-      throw Exception("Could not upload message image: $e");
-    }
-  }
-
   Future<void> addGroupMessage({
     required String groupId,
     required GroupMessage message,
@@ -177,111 +156,6 @@ class GroupChatService {
       }
     } catch (e) {
       throw Exception("Could not leave group: $e");
-    }
-  }
-
-  Future<void> addMemberToGroup({
-    required String groupId,
-    required String memberId,
-    required String memberName,
-    required String addedByName,
-  }) async {
-    try {
-      DocumentSnapshot groupDoc = await _firebaseFirestore
-          .collection('groups')
-          .doc(groupId)
-          .get();
-
-      if (groupDoc.exists) {
-        Map<String, dynamic> data = groupDoc.data() as Map<String, dynamic>;
-        List<String> memberIds = List<String>.from(data['memberIds']);
-        List<String> memberNames = List<String>.from(data['memberNames']);
-
-        if (!memberIds.contains(memberId)) {
-          memberIds.add(memberId);
-          memberNames.add(memberName);
-
-          await _firebaseFirestore.collection('groups').doc(groupId).update({
-            'memberIds': memberIds,
-            'memberNames': memberNames,
-          });
-
-          // Add system message about new member
-          GroupMessage systemMessage = GroupMessage(
-            id: '',
-            senderId: 'system',
-            senderName: 'System',
-            content: '$memberName was added to the group by $addedByName',
-            sentAt: DateTime.now(),
-            messageType: GroupMessageType.system,
-          );
-
-          await addGroupMessage(groupId: groupId, message: systemMessage);
-        }
-      }
-    } catch (e) {
-      throw Exception("Could not add member to group: $e");
-    }
-  }
-
-  Future<void> updateGroupName(String groupId, String newName) async {
-    try {
-      await _firebaseFirestore.collection('groups').doc(groupId).update({
-        'groupName': newName,
-      });
-    } catch (e) {
-      throw Exception("Could not update group name: $e");
-    }
-  }
-
-  Future<void> updateGroupImage(String groupId, String imageUrl) async {
-    try {
-      await _firebaseFirestore.collection('groups').doc(groupId).update({
-        'groupImageUrl': imageUrl,
-      });
-    } catch (e) {
-      throw Exception("Could not update group image: $e");
-    }
-  }
-
-  Future<void> deleteMessage(String groupId, String messageId) async {
-    try {
-      await _firebaseFirestore
-          .collection('groups')
-          .doc(groupId)
-          .collection('messages')
-          .doc(messageId)
-          .delete();
-    } catch (e) {
-      throw Exception("Could not delete message: $e");
-    }
-  }
-
-  Future<List<GroupMessage>> getMessagesForPagination({
-    required String groupId,
-    DocumentSnapshot? lastDocument,
-    int limit = 20,
-  }) async {
-    try {
-      Query query = _firebaseFirestore
-          .collection('groups')
-          .doc(groupId)
-          .collection('messages')
-          .orderBy('sentAt', descending: true)
-          .limit(limit);
-
-      if (lastDocument != null) {
-        query = query.startAfterDocument(lastDocument);
-      }
-
-      QuerySnapshot snapshot = await query.get();
-      return snapshot.docs
-          .map(
-            (doc) => GroupMessage.fromJson(doc.data() as Map<String, dynamic>),
-          )
-          .toList();
-    } catch (e) {
-      throw Exception("Could not load messages: $e");
     }
   }
 
