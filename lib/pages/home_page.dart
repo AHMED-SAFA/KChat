@@ -40,8 +40,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   late Animation<Offset> _slideAnimation;
   TextEditingController _searchController = TextEditingController();
 
-  Map<String, dynamic>? _loggedInUserData;
   List<dynamic> _filteredUsers = [];
+  Map<String, dynamic>? _loggedInUserData;
   List<Map<String, dynamic>> _users = [];
   List<Map<String, dynamic>> _activeUsersList = [];
   Map<String, bool> _activeUsers = {};

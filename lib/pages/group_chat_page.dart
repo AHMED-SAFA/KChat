@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import '../modals/create_group_modal.dart';
+import '../services/cloud_service.dart';
 import '../services/group_chat_service.dart';
 import '../services/auth_service.dart';
 import '../services/navigation_service.dart';
@@ -19,8 +21,11 @@ class _GroupChatPageState extends State<GroupChatPage>
   final GetIt _getIt = GetIt.instance;
   late GroupChatService _groupChatService;
   late AuthService _authService;
+  late CloudService _cloudService;
   late NavigationService _navigationService;
   late String _loggedInUserId;
+  Map<String, dynamic>? _loggedInUserData;
+  List<Map<String, dynamic>> _users = [];
   late AnimationController _animationController;
 
   @override
@@ -28,12 +33,33 @@ class _GroupChatPageState extends State<GroupChatPage>
     super.initState();
     _groupChatService = _getIt.get<GroupChatService>();
     _authService = _getIt.get<AuthService>();
+    _cloudService = _getIt.get<CloudService>();
     _navigationService = _getIt.get<NavigationService>();
     _loggedInUserId = _authService.user!.uid;
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+    _fetchLoggedInUserData();
+  }
+
+  Future<void> _fetchUsers() async {
+    if (_loggedInUserData != null) {
+      String department = _loggedInUserData!['department'];
+
+      _users = await _cloudService.fetchRegisteredUsers(
+        department: department,
+        loggedInUserId: _loggedInUserId,
+      );
+    }
+  }
+
+  Future<void> _fetchLoggedInUserData() async {
+    _loggedInUserData = await _cloudService.fetchLoggedInUserData(
+      userId: _loggedInUserId,
+    );
+    await _fetchUsers();
+    setState(() {});
   }
 
   @override
@@ -67,6 +93,24 @@ class _GroupChatPageState extends State<GroupChatPage>
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.black),
+            iconSize: 30,
+            onPressed: () async {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => CreateGroupModal(
+                  users: _users,
+                  loggedInUserId: _loggedInUserId,
+                  loggedInUserName: _loggedInUserData!['name'],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _groupChatService.getUserGroups(_loggedInUserId),
@@ -217,7 +261,16 @@ class _GroupChatPageState extends State<GroupChatPage>
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () {
-                        // Create group functionality
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => CreateGroupModal(
+                            users: _users,
+                            loggedInUserId: _loggedInUserId,
+                            loggedInUserName: _loggedInUserData!['name'],
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.add_rounded),
                       label: const Text('Create Group'),
