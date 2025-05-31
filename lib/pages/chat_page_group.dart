@@ -24,6 +24,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
   Map<String, dynamic>? _loggedInUserData;
   List<String> memberIds = [];
   List<Map<String, dynamic>> _membersData = [];
+  Map<String, String?> _userProfileImages = {};
   late String _loggedInUserId;
   String? _loggedInUserName;
   ChatUser? _currentUser;
@@ -46,6 +47,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
       _loggedInUserId = _authService.user!.uid;
       await fetchAndStoreMemberIds(widget.groupData['groupId']);
       await _loadMembersData();
+      await _cacheUserProfileImages();
 
       // Fetch user data
       _loggedInUserData = await _cloudService.fetchLoggedInUserData(
@@ -75,6 +77,14 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     }
   }
 
+  Future<void> _cacheUserProfileImages() async {
+    for (var member in _membersData) {
+      String userId = member['id'];
+      String? profileImageUrl = member['profileImageUrl'] ?? member['photoUrl'];
+      _userProfileImages[userId] = profileImageUrl;
+    }
+  }
+
   Future<void> _loadMembersData() async {
     setState(() {
       _isLoading = true;
@@ -89,6 +99,9 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
         print("member datas are:");
         print(_membersData);
       });
+
+      // Update profile image cache
+      await _cacheUserProfileImages();
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -171,6 +184,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
           ),
         ],
       ),
+
       body: Column(
         children: [
           Expanded(
@@ -202,14 +216,22 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
 
                   String messageText = data['text'] ?? data['content'] ?? '';
                   String senderName = data['senderName'] ?? 'Unknown';
+                  String senderId = data['senderId'];
+
+                  // Get profile image for this user
+                  String? profileImageUrl = _userProfileImages[senderId];
 
                   return ChatMessage(
                     user: ChatUser(
-                      id: data['senderId'],
+                      id: senderId,
                       firstName: senderName.split(' ').first,
                       lastName: senderName.split(' ').length > 1
                           ? senderName.split(' ').last
                           : '',
+                      // Add profile image here
+                      profileImage: _isValidImageUrl(profileImageUrl)
+                          ? profileImageUrl
+                          : null,
                     ),
                     text: messageText,
                     createdAt: messageTime,
@@ -252,6 +274,10 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                     currentUserTextColor: Colors.white,
                     showTime: true,
                     timeFormat: DateFormat('h:mm a'),
+                    // Enable showing other users' avatars
+                    showOtherUsersAvatar: true,
+                    // Enable showing current user's avatar
+                    showCurrentUserAvatar: true,
                   ),
                 );
               },
