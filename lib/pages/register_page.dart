@@ -43,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
     'BME',
     'Arch',
     'ECE',
-    'URP'
+    'URP',
   ];
 
   @override
@@ -281,8 +281,10 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         filled: true,
         fillColor: Colors.grey[50],
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: Colors.grey[600]),
         hintStyle: TextStyle(color: Colors.grey[400]),
       ),
@@ -329,8 +331,10 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         filled: true,
         fillColor: Colors.grey[50],
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: Colors.grey[600]),
         hintStyle: TextStyle(color: Colors.grey[400]),
       ),
@@ -392,8 +396,10 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         filled: true,
         fillColor: Colors.grey[50],
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: Colors.grey[600]),
         hintStyle: TextStyle(color: Colors.grey[400]),
       ),
@@ -443,16 +449,15 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         filled: true,
         fillColor: Colors.grey[50],
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: Colors.grey[600]),
         hintStyle: TextStyle(color: Colors.grey[400]),
       ),
       items: _departments_name_available.map((String dept) {
-        return DropdownMenuItem<String>(
-          value: dept,
-          child: Text(dept),
-        );
+        return DropdownMenuItem<String>(value: dept, child: Text(dept));
       }).toList(),
       onChanged: (value) {
         setState(() {
@@ -485,10 +490,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   title: Text(
                     "Please select a profile photo to continue",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                 ),
               ).show(context);
@@ -506,8 +508,10 @@ class _RegisterPageState extends State<RegisterPage> {
               String? selectedDepartment = department;
 
               // Firebase Authentication
-              UserCredential userCredential =
-                  await _authService.register(email!, password!);
+              UserCredential userCredential = await _authService.register(
+                email!,
+                password!,
+              );
 
               String? userId = userCredential.user?.uid;
 
@@ -519,7 +523,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // Store user data in Firestore
               await _cloudService.storeUserData(
-                activeStatus: true,
+                activeStatus: false,
                 userId: userId,
                 name: name!,
                 department: selectedDepartment!,
@@ -535,36 +539,43 @@ class _RegisterPageState extends State<RegisterPage> {
                 department: selectedDepartment,
               );
 
+              // Sign out user immediately after registration
+              await _authService.logout();
+
+              // Show verification email sent message
               toastification.show(
                 context: context,
                 title: const Text(
-                    'Account created successfully! Welcome to ChatN'),
-                type: ToastificationType.success,
+                  'Verification email sent! Please check your inbox and verify your email before logging in.',
+                ),
+                type: ToastificationType.info,
                 style: ToastificationStyle.flat,
-                autoCloseDuration: const Duration(seconds: 3),
+                autoCloseDuration: const Duration(seconds: 5),
                 animationDuration: const Duration(milliseconds: 400),
                 alignment: Alignment.bottomCenter,
                 animationBuilder: (context, animation, alignment, child) {
                   return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 1.0), // Slide from bottom
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeOut,
-                    )),
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
+                    position:
+                        Tween<Offset>(
+                          begin: const Offset(0, 1.0),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOut,
+                          ),
+                        ),
+                    child: FadeTransition(opacity: animation, child: child),
                   );
                 },
                 borderRadius: BorderRadius.circular(12),
                 showProgressBar: true,
-                backgroundColor: Colors.green.shade600,
+                backgroundColor: Colors.blue.shade600,
                 foregroundColor: Colors.white,
               );
-              _navigationService.pushReplacementNamed("/home");
+
+              // Navigate back to login page
+              _navigationService.pushReplacementNamed("/login");
             } catch (error) {
               DelightToastBar(
                 builder: (context) => const ToastCard(
@@ -575,10 +586,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   title: Text(
                     "Registration failed. Please check your details and try again.",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                 ),
               ).show(context);
@@ -659,10 +667,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           Text(
             "Already have an account? ",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
           GestureDetector(
             onTap: () {

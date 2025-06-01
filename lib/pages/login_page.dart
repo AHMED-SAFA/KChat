@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kchat/services/activeUser_service.dart';
 import 'package:kchat/services/auth_service.dart';
 import 'package:kchat/services/navigation_service.dart';
@@ -35,10 +36,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: _loginUI(),
-    );
+    return Scaffold(backgroundColor: Colors.grey[50], body: _loginUI());
   }
 
   Widget _loginUI() {
@@ -157,8 +155,10 @@ class _LoginState extends State<Login> {
         ),
         filled: true,
         fillColor: Colors.grey[50],
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: Colors.grey[600]),
         hintStyle: TextStyle(color: Colors.grey[400]),
       ),
@@ -220,8 +220,10 @@ class _LoginState extends State<Login> {
         ),
         filled: true,
         fillColor: Colors.grey[50],
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: Colors.grey[600]),
         hintStyle: TextStyle(color: Colors.grey[400]),
       ),
@@ -267,8 +269,9 @@ class _LoginState extends State<Login> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Text(
             'Reset Password',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -297,10 +300,7 @@ class _LoginState extends State<Login> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
             ),
             ElevatedButton(
               onPressed: () {
@@ -314,8 +314,10 @@ class _LoginState extends State<Login> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Send Reset Link',
-                  style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Send Reset Link',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -335,6 +337,76 @@ class _LoginState extends State<Login> {
     );
   }
 
+  // Widget _loginButton() {
+  //   return SizedBox(
+  //     width: double.infinity,
+  //     height: 50,
+  //     child: ElevatedButton(
+  //       onPressed: () async {
+  //         if (_loginFormKey.currentState?.validate() ?? false) {
+  //           setState(() {
+  //             isLoading = true;
+  //           });
+  //           email = _emailController.text;
+  //           password = _passwordController.text;
+  //           bool success = await _authService.login(email!, password!);
+  //           if (success) {
+  //             Fluttertoast.showToast(
+  //               msg: 'Welcome back! Login successful',
+  //               toastLength: Toast.LENGTH_LONG, // ~3 seconds
+  //               gravity: ToastGravity.BOTTOM, // Position at bottom
+  //               backgroundColor: Colors.green, // Success color
+  //               textColor: Colors.white,
+  //               fontSize: 14.0,
+  //               timeInSecForIosWeb: 3, // Explicitly set duration for iOS/Web
+  //             );
+  //             _activeUserService.setActive(_authService.user!.uid);
+  //             _navigationService.pushReplacementNamed("/home");
+  //           } else {
+  //             setState(() {
+  //               isLoading = false;
+  //             });
+  //             DelightToastBar(
+  //               builder: (context) => const ToastCard(
+  //                 leading: Icon(
+  //                   Icons.error_outline,
+  //                   size: 28,
+  //                   color: Colors.red,
+  //                 ),
+  //                 title: Text(
+  //                   "Login failed. Please check your credentials and try again.",
+  //                   style: TextStyle(
+  //                     fontWeight: FontWeight.w600,
+  //                     fontSize: 14,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ).show(context);
+  //           }
+  //         }
+  //       },
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: const Color(0xFF6366F1),
+  //         foregroundColor: Colors.white,
+  //         elevation: 0,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(16),
+  //         ),
+  //       ),
+  //       child: const Text(
+  //         "Sign In",
+  //         style: TextStyle(
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.w600,
+  //           letterSpacing: 0.5,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  // Replace your _loginButton method with this:
+
   Widget _loginButton() {
     return SizedBox(
       width: double.infinity,
@@ -347,33 +419,54 @@ class _LoginState extends State<Login> {
             });
             email = _emailController.text;
             password = _passwordController.text;
-            bool success = await _authService.login(email!, password!);
-            if (success) {
-              Fluttertoast.showToast(
-                msg: 'Welcome back! Login successful',
-                toastLength: Toast.LENGTH_LONG, // ~3 seconds
-                gravity: ToastGravity.BOTTOM, // Position at bottom
-                backgroundColor: Colors.green, // Success color
-                textColor: Colors.white,
-                fontSize: 14.0,
-                timeInSecForIosWeb: 3, // Explicitly set duration for iOS/Web
-              );
-              _activeUserService.setActive(_authService.user!.uid);
-              _navigationService.pushReplacementNamed("/home");
-            } else {
+
+            try {
+              bool success = await _authService.login(email!, password!);
+              if (success) {
+                Fluttertoast.showToast(
+                  msg: 'Welcome back! Login successful',
+                  toastLength: Toast.LENGTH_LONG,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.green,
+                  textColor: Colors.white,
+                  fontSize: 14.0,
+                  timeInSecForIosWeb: 3,
+                );
+                _activeUserService.setActive(_authService.user!.uid);
+                _navigationService.pushReplacementNamed("/home");
+              }
+            } catch (e) {
               setState(() {
                 isLoading = false;
               });
+
+              String errorMessage =
+                  "Login failed. Please check your credentials and try again.";
+
+              if (e is FirebaseAuthException) {
+                if (e.code == 'email-not-verified') {
+                  // Show email verification dialog
+                  _showEmailVerificationDialog();
+                  return;
+                } else if (e.code == 'user-not-found') {
+                  errorMessage = "No account found with this email address.";
+                } else if (e.code == 'wrong-password') {
+                  errorMessage = "Incorrect password. Please try again.";
+                } else if (e.code == 'invalid-email') {
+                  errorMessage = "Invalid email address format.";
+                }
+              }
+
               DelightToastBar(
-                builder: (context) => const ToastCard(
-                  leading: Icon(
+                builder: (context) => ToastCard(
+                  leading: const Icon(
                     Icons.error_outline,
                     size: 28,
                     color: Colors.red,
                   ),
                   title: Text(
-                    "Login failed. Please check your credentials and try again.",
-                    style: TextStyle(
+                    errorMessage,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -400,6 +493,97 @@ class _LoginState extends State<Login> {
           ),
         ),
       ),
+    );
+  }
+
+  // Add this method to your _LoginState class:
+  void _showEmailVerificationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Email Verification Required',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.email_outlined,
+                size: 64,
+                color: Color(0xFF6366F1),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Please verify your email address before logging in. Check your inbox for the verification email.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK', style: TextStyle(color: Colors.grey[600])),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  // Use the email and password from the form controllers
+                  await _authService.resendVerificationEmail(
+                    _emailController.text,
+                    _passwordController.text,
+                  );
+                  Navigator.of(context).pop();
+                  Fluttertoast.showToast(
+                    msg:
+                        'New verification email sent! Please check your inbox.',
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.blue,
+                    textColor: Colors.white,
+                    fontSize: 14.0,
+                  );
+                } catch (e) {
+                  Navigator.of(context).pop();
+                  String errorMsg =
+                      'Failed to send verification email. Please try again.';
+                  if (e is FirebaseAuthException) {
+                    if (e.code == 'wrong-password') {
+                      errorMsg =
+                          'Incorrect password. Cannot send verification email.';
+                    } else if (e.code == 'user-not-found') {
+                      errorMsg = 'Account not found. Please check your email.';
+                    }
+                  }
+                  Fluttertoast.showToast(
+                    msg: errorMsg,
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 14.0,
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6366F1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Resend Verification',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -454,10 +638,7 @@ class _LoginState extends State<Login> {
         children: [
           Text(
             "Don't have an account? ",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
           GestureDetector(
             onTap: () {
