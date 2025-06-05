@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
         ),
         const SizedBox(height: 8),
         Text(
-          "Sign in to continue to ChatN",
+          "Sign in to continue to KChat",
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[600],
@@ -244,7 +244,6 @@ class _LoginState extends State<Login> {
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          // Handle forgot password
           _showForgotPasswordDialog();
         },
         style: TextButton.styleFrom(
@@ -263,149 +262,276 @@ class _LoginState extends State<Login> {
   }
 
   void _showForgotPasswordDialog() {
-    final TextEditingController emailController = TextEditingController();
+    final TextEditingController forgotEmailController = TextEditingController();
+    final GlobalKey<FormState> forgotPasswordFormKey = GlobalKey<FormState>();
+    bool isResetLoading = false;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Text(
+                'Reset Password',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              content: Form(
+                key: forgotPasswordFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Enter your email address and we\'ll send you a password reset link.',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: forgotEmailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: 'Email Address',
+                        hintText: 'Enter your email',
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6366F1),
+                            width: 2,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isResetLoading
+                      ? null
+                      : () => Navigator.of(context).pop(),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: isResetLoading
+                      ? null
+                      : () async {
+                          if (forgotPasswordFormKey.currentState?.validate() ??
+                              false) {
+                            setState(() {
+                              isResetLoading = true;
+                            });
+
+                            try {
+                              await _authService.sendPasswordResetEmail(
+                                forgotEmailController.text.trim(),
+                              );
+
+                              Navigator.of(context).pop();
+                              _showPasswordResetSentDialog(
+                                forgotEmailController.text.trim(),
+                              );
+                            } catch (e) {
+                              setState(() {
+                                isResetLoading = false;
+                              });
+
+                              String errorMessage =
+                                  'Failed to send reset email. Please try again.';
+
+                              if (e is FirebaseAuthException) {
+                                switch (e.code) {
+                                  case 'user-not-found':
+                                    errorMessage =
+                                        'No account found with this email address.';
+                                    break;
+                                  case 'invalid-email':
+                                    errorMessage =
+                                        'Invalid email address format.';
+                                    break;
+                                  case 'too-many-requests':
+                                    errorMessage =
+                                        'Too many requests. Please wait before trying again.';
+                                    break;
+                                  default:
+                                    errorMessage =
+                                        'Failed to send reset email. Please try again.';
+                                }
+                              }
+
+                              DelightToastBar(
+                                builder: (context) => ToastCard(
+                                  leading: const Icon(
+                                    Icons.error_outline,
+                                    size: 28,
+                                    color: Colors.red,
+                                  ),
+                                  title: Text(
+                                    errorMessage,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ).show(context);
+                            }
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: isResetLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Text(
+                          'Send Reset Link',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showPasswordResetSentDialog(String email) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Text(
-            'Reset Password',
-            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.email_outlined,
+                  size: 48,
+                  color: Color(0xFF6366F1),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Password Reset Email Sent!',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
               Text(
-                'Enter your email address and we\'ll send you a link to reset your password.',
-                style: TextStyle(color: Colors.grey[600]),
+                'We\'ve sent a password reset link to:',
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                email,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email Address',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.email_outlined),
-                ),
+              Text(
+                'Please check your email and follow the instructions to reset your password. The link will expire in 1 hour.',
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Handle password reset
-                Navigator.of(context).pop();
-                _showResetEmailSentToast();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6366F1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _showForgotPasswordDialog();
+                    },
+                    child: const Text(
+                      'Resend Email',
+                      style: TextStyle(color: Color(0xFF6366F1)),
+                    ),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'Send Reset Link',
-                style: TextStyle(color: Colors.white),
-              ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6366F1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         );
       },
     );
   }
-
-  void _showResetEmailSentToast() {
-    Fluttertoast.showToast(
-      msg: 'Password reset link sent to your email!',
-      toastLength: Toast.LENGTH_LONG, // approximately 3 seconds
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 3,
-      backgroundColor: Colors.grey[800],
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
-
-  // Widget _loginButton() {
-  //   return SizedBox(
-  //     width: double.infinity,
-  //     height: 50,
-  //     child: ElevatedButton(
-  //       onPressed: () async {
-  //         if (_loginFormKey.currentState?.validate() ?? false) {
-  //           setState(() {
-  //             isLoading = true;
-  //           });
-  //           email = _emailController.text;
-  //           password = _passwordController.text;
-  //           bool success = await _authService.login(email!, password!);
-  //           if (success) {
-  //             Fluttertoast.showToast(
-  //               msg: 'Welcome back! Login successful',
-  //               toastLength: Toast.LENGTH_LONG, // ~3 seconds
-  //               gravity: ToastGravity.BOTTOM, // Position at bottom
-  //               backgroundColor: Colors.green, // Success color
-  //               textColor: Colors.white,
-  //               fontSize: 14.0,
-  //               timeInSecForIosWeb: 3, // Explicitly set duration for iOS/Web
-  //             );
-  //             _activeUserService.setActive(_authService.user!.uid);
-  //             _navigationService.pushReplacementNamed("/home");
-  //           } else {
-  //             setState(() {
-  //               isLoading = false;
-  //             });
-  //             DelightToastBar(
-  //               builder: (context) => const ToastCard(
-  //                 leading: Icon(
-  //                   Icons.error_outline,
-  //                   size: 28,
-  //                   color: Colors.red,
-  //                 ),
-  //                 title: Text(
-  //                   "Login failed. Please check your credentials and try again.",
-  //                   style: TextStyle(
-  //                     fontWeight: FontWeight.w600,
-  //                     fontSize: 14,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ).show(context);
-  //           }
-  //         }
-  //       },
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: const Color(0xFF6366F1),
-  //         foregroundColor: Colors.white,
-  //         elevation: 0,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(16),
-  //         ),
-  //       ),
-  //       child: const Text(
-  //         "Sign In",
-  //         style: TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.w600,
-  //           letterSpacing: 0.5,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Replace your _loginButton method with this:
 
   Widget _loginButton() {
     return SizedBox(
@@ -445,7 +571,6 @@ class _LoginState extends State<Login> {
 
               if (e is FirebaseAuthException) {
                 if (e.code == 'email-not-verified') {
-                  // Show email verification dialog
                   _showEmailVerificationDialog();
                   return;
                 } else if (e.code == 'user-not-found') {
@@ -496,15 +621,13 @@ class _LoginState extends State<Login> {
     );
   }
 
-  // Add this method to your _LoginState class:
   void _showEmailVerificationDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: const Text(
             'Email Verification Required',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -533,7 +656,6 @@ class _LoginState extends State<Login> {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  // Use the email and password from the form controllers
                   await _authService.resendVerificationEmail(
                     _emailController.text,
                     _passwordController.text,
@@ -657,4 +779,5 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+
 }

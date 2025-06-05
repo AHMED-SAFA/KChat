@@ -125,7 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          "Join ChatN and connect with your peers",
+          "Join KChat and connect with your peers",
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[600],

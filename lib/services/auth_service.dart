@@ -98,4 +98,56 @@ class AuthService {
     }
     return false;
   }
+
+  // Forgot Password functionality
+  // Sends a password reset email to the provided email address
+  // Firebase automatically handles:
+  // - Link expiration (typically 1 hour, but can be configured)
+  // - Invalidating previous reset links when a new one is sent
+  // - Security measures to prevent abuse
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      print('Error sending password reset email: $e');
+      rethrow;
+    }
+  }
+
+  // Method to confirm password reset with code and new password
+  // This is used if you want to handle password reset within your app
+  // rather than redirecting to Firebase's web interface
+  Future<void> confirmPasswordReset(String code, String newPassword) async {
+    try {
+      await _firebaseAuth.confirmPasswordReset(
+        code: code,
+        newPassword: newPassword,
+      );
+    } catch (e) {
+      print('Error confirming password reset: $e');
+      rethrow;
+    }
+  }
+
+  // Method to verify password reset code
+  // Returns the email associated with the reset code if valid
+  Future<String> verifyPasswordResetCode(String code) async {
+    try {
+      String email = await _firebaseAuth.verifyPasswordResetCode(code);
+      return email;
+    } catch (e) {
+      print('Error verifying password reset code: $e');
+      rethrow;
+    }
+  }
+
+  // Method to check if password reset code is valid
+  Future<bool> isPasswordResetCodeValid(String code) async {
+    try {
+      await _firebaseAuth.verifyPasswordResetCode(code);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
