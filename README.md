@@ -7,8 +7,18 @@ A Flutter-based chat application designed for university departments, enabling s
 <img height="300" alt="Screenshot (168)" src="https://github.com/user-attachments/assets/e7e75129-6c75-4c36-991b-8baae6167253" />
 <img height="300" alt="Screenshot (184)" src="https://github.com/user-attachments/assets/0b10c07c-a2dd-4bfa-9866-c9f87265b94a" />
 
+---
+
+## 📦 Download APK
+
+👉 [**Click here to download the latest APK**](https://drive.google.com/drive/folders/1hrBuz9VeGQn8HQT2k_Rovt6vhU37YTfo?usp=sharing)  
+
+> **Note:** After clicking the link, you will be redirected to a drive to download the APK file.
+
+---
 
 </div>
+
 
 
 ## 🎯 Overview
@@ -98,6 +108,8 @@ dependencies:
   flutter_markdown: ^0.7.7+1
   intl: ^0.19.0
 ```
+
+---
 
 ## Screenshots:
 <div align="center">
@@ -238,10 +250,9 @@ dependencies:
 
 </details>
 
-
 </div>
 
-
+---
 
 ## 🚀 Getting Started
 
