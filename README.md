@@ -1,6 +1,6 @@
 <div align='center'>
   
-# 💬 KChat 
+# 📱KChat 
 
 A Flutter-based chat application designed for university departments, enabling students to connect and communicate with their departmental peers in a secure and organized environment.
 
@@ -61,7 +61,7 @@ KChat is a department-wise chat application that allows university students to r
 - **Firebase Realtime Database** - Real-time data sync
 - **Supabase** - File storage and management
 
-### APIs & Integrations
+### Ai Integrations & APIs
 - **Gemini API** - AI chat functionality
 - **Groq API** - Advanced AI responses
 - **Flutter PDF** - PDF handling and viewing
