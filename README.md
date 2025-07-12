@@ -4,6 +4,10 @@
 
 A Flutter-based chat application designed for university departments, enabling students to connect and communicate with their departmental peers in a secure and organized environment.
 
+<img height="300" alt="Screenshot (168)" src="https://github.com/user-attachments/assets/e7e75129-6c75-4c36-991b-8baae6167253" />
+<img height="300" alt="Screenshot (184)" src="https://github.com/user-attachments/assets/0b10c07c-a2dd-4bfa-9866-c9f87265b94a" />
+
+
 </div>
 
 
@@ -96,16 +100,146 @@ dependencies:
 ```
 
 ## Screenshots:
+<div align="center">
+
 
 <details>
 <summary>
 <strong>Splash Screen</strong> 
 </summary>
 <br>
+  
+<img height="500" alt="splash2" src="https://github.com/user-attachments/assets/da5432f2-994d-4a48-a79a-7d4f66a26c9b" />
+<img height="500" alt="Splash1" src="https://github.com/user-attachments/assets/17788289-83d5-4c82-ac9c-2e31a066fbe2" />
+
+</details>
+
+<details>
+<summary>
+<strong>Register</strong> 
+</summary>
+<br>
+  
+<img height="500" alt="reg2" src="https://github.com/user-attachments/assets/4fdbb677-ff3d-44e9-a6b1-4d4b55143b73" />
+<img height="500" alt="reg1" src="https://github.com/user-attachments/assets/6e27a98f-0d6e-4e25-bf8b-a87d182d9028" />
+
+</details>
+
+<details>
+<summary>
+<strong>Login</strong> 
+</summary>
+<br>
+  
+<img height="500" alt="Screenshot__164_-removebg-preview" src="https://github.com/user-attachments/assets/b9c343cf-e268-46b3-bdce-4c1c940ac5a7" />
+
+</details>
+
+<details>
+<summary>
+<strong>Reset Password</strong> 
+</summary>
+<br>
+  
+<img height="400" alt="Screenshot__165_-removebg-preview" src="https://github.com/user-attachments/assets/fe6d4372-2060-4ea5-999d-2f620b092239" />
+<img height="400" alt="Screenshot (200)" src="https://github.com/user-attachments/assets/64e8d098-122b-49f2-bf5a-fc158f32e404" />
+
+</details>
+
+<details>
+<summary>
+<strong>Home</strong> 
+</summary>
+<br>
+
+<img height="500" alt="Screenshot (184)" src="https://github.com/user-attachments/assets/2c1ea22f-13a9-4b70-8f59-1870aab94334" />
+<img height="500" alt="Screenshot (178)" src="https://github.com/user-attachments/assets/86b0ed76-6e4c-4377-b528-15f176a14b73" />
 
 
 </details>
 
+<details>
+<summary>
+<strong>Chat page</strong> 
+</summary>
+<br>
+<p>One can send and view image and pdfs</p>
+
+<img height="500" alt="Screenshot (193)" src="https://github.com/user-attachments/assets/3f047f09-0473-42b3-bc50-b9a973ddb62e" />
+<img height="500" alt="Screenshot (192)" src="https://github.com/user-attachments/assets/d496dd17-98ca-4a97-8644-79c3ece4b9e8" />
+
+
+</details>
+
+
+
+<details>
+<summary>
+<strong>Edit profile</strong> 
+</summary>
+<br>
+<p>Correct password is required to modify profile</p>
+
+<img height="500" alt="Screenshot (180)" src="https://github.com/user-attachments/assets/bb4620bd-5e9c-4a09-9593-24a1a79e879d" />
+
+</details>
+
+
+<details>
+<summary>
+<strong>Group Chat</strong> 
+</summary>
+<br>
+
+<img height="400" alt="Screenshot (185)" src="https://github.com/user-attachments/assets/50a2a6bd-3e99-435d-81c9-ac90d7ae5a75" />
+<img height="400" alt="Screenshot (189)" src="https://github.com/user-attachments/assets/b9487fcf-e085-405c-80cb-fed5709c282e" />
+<img height="400" alt="Screenshot (186)" src="https://github.com/user-attachments/assets/f51b2dde-5f4f-4cf3-bf49-ae3722545ea6" />
+<img height="400" alt="Screenshot (188)" src="https://github.com/user-attachments/assets/585fcf05-84e3-427d-970b-f5c55c127356" />
+<img height="400" alt="Screenshot (186)" src="https://github.com/user-attachments/assets/dfc4d340-d82e-4baa-9728-b6502e1f83ce" />
+
+</details>
+
+
+<details>
+<summary>
+<strong>Chat with Ai</strong> 
+</summary>
+<br>
+<p>User can switch between <b>Gemini</b> and <b>Groq</b></p>
+  
+<img height="500" alt="Screenshot (182)" src="https://github.com/user-attachments/assets/aef83e21-8a1b-4a83-989f-94352567171e" />
+<img height="500" alt="Screenshot (181)" src="https://github.com/user-attachments/assets/d0548600-5387-4208-89ee-8fa7c5741cf1" />
+
+
+</details>
+
+
+<details>
+<summary>
+<strong>Notifications</strong> 
+</summary>
+<br>
+<p>Notifications will arrive if you are inactive</p>
+  
+<img height="500" alt="Screenshot (198)" src="https://github.com/user-attachments/assets/cef8c061-7ec8-43a8-a548-956fbf6fe559" />
+
+</details>
+
+
+<details>
+<summary>
+<strong>Email verification and Reset password mails</strong> 
+</summary>
+<br>
+  
+<img height="500" alt="Screenshot (175)" src="https://github.com/user-attachments/assets/d2cab47a-e7f6-434b-82fa-6e9230e9615f" />
+<img height="500" alt="Screenshot (201)" src="https://github.com/user-attachments/assets/6c0decf5-f075-4a93-8d1b-be020254647f" />
+
+
+</details>
+
+
+</div>
 
 
 
